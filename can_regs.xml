@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Top node -->
+<CAN>
+  <!-- BasicCAN -->
+  <CANMODE value="Basic">
+		<!-- 控制寄存器 -->
+		<NAME name="CR">
+	  	<!-- 特性 -->
+	  	<RDWR>可读可写</RDWR>
+	  
+	  	<!-- 偏移地址 -->
+	  	<OFFSET>0</OFFSET>
+	  
+	  	<!-- 工作模式 -->
+	  	<WORKMODE>
+				<READ>控制字</READ>
+				<WRITE>写入的控制字</WRITE>
+	  	</WORKMODE>
+	  
+	  	<!-- 复位模式 -->
+	  	<RESETMODE>
+				<READ>写入的控制字</READ>
+				<WRITE>控制字</WRITE>
+	  	</RESETMODE>
+		</NAME>
+  </CANMODE>
+
+  <!-- PeliCAN -->
+  <CANMODE value="Peli">
+	
+  </CANMODE>
+</CAN>
