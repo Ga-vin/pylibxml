@@ -42,11 +42,17 @@ class ParseXml(object):
         self.__root_tag   = ""
         self.__valid_flag = False
         self.__xml_obj    = None
+        self.__depth      = 1
+        self.__node_set   = set()
 
         try:
             ## Specific file does not exists in current directory
-            if not os.path.exists(os.getcwd() + "\\" + self.getFileName()):
-                raise xmlerror.XFileNotExistError(self.getFileName())
+            if sys.platform == "linux2":
+                if not os.path.exists(os.getcwd() + "/" + self.getFileName()):
+                    raise xmlerror.XFileNotExistError(self.getFileName())
+            else:    
+                if not os.path.exists(os.getcwd() + "\\" + self.getFileName()):
+                    raise xmlerror.XFileNotExistError(self.getFileName())
 
             ## Create XML object
             self.__xml_obj    = ET.parse(self.getFileName())
@@ -67,12 +73,28 @@ class ParseXml(object):
         else:
             return False
 
+    def isRepeat(self, key):
+        '''
+        Check whether the specific key has in the set
+        @key -- to be checked
+        '''
+        if key in self.__node_set:
+            return True
+        else:
+            return False
+
     def getFileName(self):
         '''
         Get the name of file to be parsing
         @Specific xml file name
         '''
         return self.__file_name
+
+    def getRootObject(self):
+        '''
+        Get root xml object
+        '''
+        return self.__xml_obj.getroot()
 
     def getRootTag(self):
         '''
@@ -85,7 +107,7 @@ class ParseXml(object):
         else:
             return ""
 
-    def getDepth(self):
+    def getDepth(self, root = None):
         '''
         Get the depth of whole xml file exclude root node.
         @-1    -- xml object is invalid
@@ -95,8 +117,17 @@ class ParseXml(object):
         ## Makesure the xml object is valid
         if self.isValid():
             pass
+            for item in root:
+                if item._children:
+                    if self.isRepeat(item.tag):
+                        continue
+                    self.__depth += 1
+                    self.__node_set.add(item.tag)
+                    self.getDepth(root = item)
         else:
             return -1
+
+        return self.__depth
 
     def isNUL(self):
         '''
@@ -121,8 +152,11 @@ def main():
 
     xml_oo = ParseXml(sys.argv[1])
     root_tag = xml_oo.getRootTag()
+    root_obj = xml_oo.getRootObject()
     if root_tag:
         print 'Root Tag: %s' % root_tag
+
+    print 'Depth: %d' % xml_oo.getDepth(root_obj)
 ## ------------------------------------------------------------------------------
 
 ## ------------------------------------------------------------------------------
